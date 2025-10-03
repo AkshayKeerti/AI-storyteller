@@ -1,9 +1,13 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import AuthModal from './auth/auth-modal'
+import { useAuth } from '../contexts/auth-context'
 
 export default function Header() {
+  const { user, logout } = useAuth()
+  const router = useRouter()
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
@@ -34,20 +38,48 @@ export default function Header() {
             </a>
           </nav>
 
-          {/* Auth buttons */}
+          {/* Conditional auth buttons */}
           <div className="flex items-center space-x-4">
-            <button
-              onClick={() => setIsAuthModalOpen(true)}
-              className="btn-secondary"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => setIsAuthModalOpen(true)}
-              className="btn-primary"
-            >
-              Get Started
-            </button>
+            {user ? (
+              // Authenticated user - redirect to dashboard
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="flex items-center space-x-2 hover:bg-gray-50 rounded-lg p-2 transition-colors"
+              >
+                {user.avatar ? (
+                  <img 
+                    src={user.avatar} 
+                    alt="User avatar" 
+                    className="w-8 h-8 rounded-full"
+                  />
+                ) : (
+                  <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm font-medium">
+                      {user.name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <span className="text-sm font-medium text-gray-700">
+                  {user.name}
+                </span>
+              </button>
+            ) : (
+              // Non-authenticated user - show login buttons
+              <>
+                <button
+                  onClick={() => setIsAuthModalOpen(true)}
+                  className="btn-secondary"
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => setIsAuthModalOpen(true)}
+                  className="btn-primary"
+                >
+                  Get Started
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

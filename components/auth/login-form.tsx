@@ -1,14 +1,18 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import SocialLoginButtons from './social-login-buttons'
+import { useAuth } from '../../contexts/auth-context'
 
 interface LoginFormProps {
   onSuccess: () => void
 }
 
 export default function LoginForm({ onSuccess }: LoginFormProps) {
+  const { login } = useAuth()
+  const router = useRouter()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -51,15 +55,31 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     
     setIsLoading(true)
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const success = await login(formData.email, formData.password)
+      if (success) {
+        // Close modal and redirect to dashboard (handled by auth context)
+        onSuccess()
+        router.push('/dashboard')
+      } else {
+        setErrors({ general: 'Invalid email or password. Please try again.' })
+      }
+    } catch (error) {
+      setErrors({ general: 'Something went wrong. Please try again.' })
+    } finally {
       setIsLoading(false)
-      onSuccess()
-    }, 1500)
+    }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* General error message */}
+      {errors.general && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+          <p className="text-sm text-red-600">{errors.general}</p>
+        </div>
+      )}
+      
       {/* Email field */}
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">

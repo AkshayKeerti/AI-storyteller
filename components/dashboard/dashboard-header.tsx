@@ -1,13 +1,15 @@
 'use client'
 
 import { useState } from 'react'
+import { useAuth } from '../../contexts/auth-context'
 
 interface DashboardHeaderProps {
   userName?: string
   userAvatar?: string
 }
 
-export default function DashboardHeader({ userName = "John Doe", userAvatar }: DashboardHeaderProps) {
+export default function DashboardHeader() {
+  const { user, logout } = useAuth()
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -66,26 +68,26 @@ export default function DashboardHeader({ userName = "John Doe", userAvatar }: D
 
             {/* User Avatar & Menu */}
             <div className="relative">
-              <button
-                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center space-x-2 hover:bg-gray-50 rounded-lg p-2 transition-colors"
-              >
-                {userAvatar ? (
-                  <img 
-                    src={userAvatar} 
-                    alt="User avatar" 
-                    className="w-8 h-8 rounded-full"
-                  />
-                ) : (
-                  <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-medium">
-                      {userName.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                )}
-                <span className="hidden md:block text-sm font-medium text-gray-700">
-                  {userName}
-                </span>
+            <button
+              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              className="flex items-center space-x-2 hover:bg-gray-50 rounded-lg p-2 transition-colors"
+            >
+              {user?.avatar ? (
+                <img 
+                  src={user.avatar} 
+                  alt="User avatar" 
+                  className="w-8 h-8 rounded-full"
+                />
+              ) : (
+                <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">
+                    {user?.name?.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )}
+              <span className="hidden md:block text-sm font-medium text-gray-700">
+                {user?.name}
+              </span>
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
@@ -102,7 +104,10 @@ export default function DashboardHeader({ userName = "John Doe", userAvatar }: D
                       Settings
                     </a>
                     <hr className="my-1" />
-                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                    <button 
+                      onClick={logout}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
                       Logout
                     </button>
                   </div>
