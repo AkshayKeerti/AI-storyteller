@@ -90,8 +90,8 @@ Now Sarah had to choose: solve the case and collapse the quantum reality, or let
       title: 'The Final Choice',
       content: "Now Sarah had to choose: solve the case and collapse the quantum reality, or let Marcus—and herself—exist across multiple timelines forever. Her decision would determine not just justice, but the fundamental nature of time itself.",
       wordCount: 42
-    });
-],
+    }
+  ],
   totalWordCount: 323,
   readingTime: 2
 }

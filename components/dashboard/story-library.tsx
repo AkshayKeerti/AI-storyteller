@@ -21,7 +21,7 @@ interface StoryLibraryProps {
 const mockStories: Story[] = [
   {
     id: '1',
-    title: 'The Dragon\'s Last Flight',
+    title: "The Dragon's Last Flight",
     genre: 'Fantasy',
     coverImage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop',
     wordCount: 1200,
@@ -79,70 +79,26 @@ const mockStories: Story[] = [
   }
 ]
 
+const genres = ['all', 'Fantasy', 'Sci-Fi', 'Mystery', 'Romance', 'Horror', 'Adventure']
+const lengths = ['all', 'Short (<500)', 'Medium (500-1000)', 'Long (1000+)']
+const statuses = ['all', 'Complete', 'In Progress']
+const sortOptions = ['newest', 'oldest', 'alphabetically', 'word count']
+
 export default function StoryLibrary({ viewMode, onViewModeChange }: StoryLibraryProps) {
-  const [selectedGenre, setSelectedGenre] = useState<string>('all')
-  const [selectedLength, setSelectedLength] = useState<string>('all')
-  const [selectedStatus, setSelectedStatus] = useState<string>('all')
-  const [sortBy, setSortBy] = useState<string>('newest')
-  const [filteredStories, setFilteredStories] = useState<Story[]>(mockStories)
+  const [selectedGenre, setSelectedGenre] = useState('all')
+  const [selectedLength, setSelectedLength] = useState('all')
+  const [selectedStatus, setSelectedStatus] = useState('all')
+  const [sortBy, setSortBy] = useState('newest')
 
-  const genres = ['All', 'Fantasy', 'Sci-Fi', 'Mystery', 'Romance', 'Horror', 'Adventure']
-  const lengths = ['All', 'Short (<500)', 'Medium (500-1000)', 'Long (1000+)']
-  const statuses = ['All', 'Complete', 'In Progress']
-  const sortOptions = ['Newest', 'Oldest', 'Alphabetically', 'Word Count']
-
-  const handleFilterChange = () => {
-    let filtered = [...mockStories]
-
-    // Filter by genre
-    if (selectedGenre !== 'all') {
-      filtered = filtered.filter(story => story.genre === selectedGenre)
-    }
-
-    // Filter by length
-    if (selectedLength !== 'all') {
-      switch (selectedLength) {
-        case 'Short (<500)':
-          filtered = filtered.filter(story => story.wordCount < 500)
-          break
-        case 'Medium (500-1000)':
-          filtered = filtered.filter(story => story.wordCount >= 500 && story.wordCount <= 1000)
-          break
-        case 'Long (1000+)':
-          filtered = filtered.filter(story => story.wordCount > 1000)
-          break
-      }
-    }
-
-    // Filter by status
+  // Simple filtering logic
+  const filteredStories = mockStories.filter(story => {
+    if (selectedGenre !== 'all' && story.genre !== selectedGenre) return false
     if (selectedStatus !== 'all') {
-      filtered = filtered.filter(story => 
-        selectedStatus === 'Complete' ? story.isComplete : !story.isComplete
-      )
+      const isComplete = story.isComplete
+      if (selectedStatus === 'Complete' && !isComplete) return false
+      if (selectedStatus === 'In Progress' && isComplete) return false
     }
-
-    // Sort
-    switch (sortBy) {
-      case 'newest':
-        filtered.sort((a, b) => `new Date(b.createdAt).getTime()` - `new Date(a.createdAt).getTime()`)
-        break
-      case 'oldest':
-        filtered.sort((a, b) => `new Date(a.createdAt).getTime()` - `new Date(b.createdAt).getTime()`)
-        break
-      case 'alphabetically':
-        filtered.sort((a, b) => a.title.localeCompare(b.title))
-        break
-      case 'word count':
-        filtered.sort((a, b) => b.wordCount - a.wordCount)
-        break
-    }
-
-    setFilteredStories(filtered)
-  }
-
-  // Call handleFilterChange whenever filters change
-  useState(() => {
-    handleFilterChange()
+    return true
   })
 
   const StoryCard = ({ story }: { story: Story }) => (
@@ -216,8 +172,8 @@ export default function StoryLibrary({ viewMode, onViewModeChange }: StoryLibrar
               className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
               {genres.map(genre => (
-                <option key={genre} value={genre.toLowerCase()}>
-                  {genre}
+                <option key={genre} value={genre}>
+                  {genre === 'all' ? 'All Genres' : genre}
                 </option>
               ))}
             </select>
@@ -230,7 +186,7 @@ export default function StoryLibrary({ viewMode, onViewModeChange }: StoryLibrar
             >
               {lengths.map(length => (
                 <option key={length} value={length}>
-                  {length}
+                  {length === 'all' ? 'All Lengths' : length}
                 </option>
               ))}
             </select>
@@ -242,8 +198,8 @@ export default function StoryLibrary({ viewMode, onViewModeChange }: StoryLibrar
               className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
               {statuses.map(status => (
-                <option key={status} value={status.toLowerCase()}>
-                  {status}
+                <option key={status} value={status}>
+                  {status === 'all' ? 'All Status' : status}
                 </option>
               ))}
             </select>
@@ -258,8 +214,8 @@ export default function StoryLibrary({ viewMode, onViewModeChange }: StoryLibrar
               className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
               {sortOptions.map(option => (
-                <option key={option} value={option.toLowerCase()}>
-                  Sort by {option}
+                <option key={option} value={option}>
+                  Sort by {option.charAt(0).toUpperCase() + option.slice(1)}
                 </option>
               ))}
             </select>
@@ -278,7 +234,7 @@ export default function StoryLibrary({ viewMode, onViewModeChange }: StoryLibrar
                 onClick={() => onViewModeChange('list')}
                 className={`p-2 ${viewMode === 'list' ? 'bg-primary-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
               >
-                <svg className="w-5 h-5` fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
                 </svg>
               </button>
@@ -310,7 +266,7 @@ export default function StoryLibrary({ viewMode, onViewModeChange }: StoryLibrar
                     alt={story.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                </div>
+                </div>,
               )}
               <div className="p-4">
                 <div className="flex items-center gap-2 mb-2">
